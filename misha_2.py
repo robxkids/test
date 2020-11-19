@@ -16,6 +16,8 @@ class LfChallengeNoCvTaskSolution(TaskSolution):
             # Требуется по положению робота в полосе определить линейную и угловые скорости
             speed = 1
             steering = 0
+            k_p = 10
+            k_d = 1
             steering = k_p*distance_to_road_center + k_d*angle_from_straight_in_rads
             env.step([speed, steering])
             env.render()
