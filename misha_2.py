@@ -14,11 +14,12 @@ class LfChallengeNoCvTaskSolution(TaskSolution):
             distance_to_road_center = lane_pose.dist
             angle_from_straight_in_rads = lane_pose.angle_rad
             # Требуется по положению робота в полосе определить линейную и угловые скорости
-            speed = 1
+            speed = 0.2
             steering = 0
+            print("distance", distance_to_road_center)
+            print("angle", angle_from_straight_in_roads)
             k_p = 10
             k_d = 1
             steering = k_p*distance_to_road_center + k_d*angle_from_straight_in_rads
             env.step([speed, steering])
             env.render()
-
