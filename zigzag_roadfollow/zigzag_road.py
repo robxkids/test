@@ -21,12 +21,13 @@ while(video.isOpened()):
         dst_width = int(frame_width/2)
         dst = np.float32([[0, dst_height], [0, 0], [dst_width, 0], [dst_width, dst_height]])
         M = cv2.getPerspectiveTransform(src_float, dst)
-        warped = cv2.warpPerspective(frame, M, (dst_width, dst_height), flags=cv2.INTER_LINEAR)
 
-        #cv2.imshow("yellow", binary_yellow)
-        #cv2.imshow("white", binary_white)
+        warped_yellow = cv2.warpPerspective(binary_yellow, M, (dst_width, dst_height), flags=cv2.INTER_LINEAR)
+        warped_white = cv2.warpPerspective(binary_white, M, (dst_width, dst_height), flags=cv2.INTER_LINEAR)
+
         cv2.imshow("frame", frame)
-        cv2.imshow("warped", warped)
+        cv2.imshow("warped_yellow", warped_yellow)
+        cv2.imshow("warped white", warped_white)
 
     else:
         video.set(cv2.CAP_PROP_POS_FRAMES, 0)
