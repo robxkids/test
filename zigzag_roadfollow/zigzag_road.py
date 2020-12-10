@@ -25,8 +25,16 @@ while(video.isOpened()):
         warped_yellow = cv2.warpPerspective(binary_yellow, M, (dst_width, dst_height), flags=cv2.INTER_LINEAR)
         warped_white = cv2.warpPerspective(binary_white, M, (dst_width, dst_height), flags=cv2.INTER_LINEAR)
 
+
+        histogram_yellow = np.sum(warped_yellow[:,:], axis=0) #histogram_yellow = [1520, 0, 255 ...  512] len(histogram_yellow) = 400
+        print(warped_yellow.shape)
+        midpoint = histogram_yellow.shape[0] // 2 # 200
+        indWhiteColumnL = np.argmax(histogram_yellow[:midpoint]) #индекс элемента с наибольшим значением
+        warped_yellow_visual = warped_yellow.copy()
+        cv2.line(warped_yellow_visual, (indWhiteColumnL, 0), (indWhiteColumnL, histogram_yellow.shape[0]), 255, 3)
+
         cv2.imshow("frame", frame)
-        cv2.imshow("warped_yellow", warped_yellow)
+        cv2.imshow("warped_yellow", warped_yellow_visual)
         cv2.imshow("warped white", warped_white)
 
     else:
