@@ -18,10 +18,7 @@ class LfChallengeNoCvTaskSolution(TaskSolution):
             print("angle", angle_from_straight_in_roads)
             k_p = 10
             k_d = 1
-            if distance_to_road_center <= 0.02:
-                speed = 1
-            else:
-                speed = 0.27
+            speed = distance_to_road_center * 30
             steering = k_p*distance_to_road_center + k_d*angle_from_straight_in_rads
             env.step([speed, steering])
             env.render()
