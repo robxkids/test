@@ -25,17 +25,43 @@ while(video.isOpened()):
         warped_yellow = cv2.warpPerspective(binary_yellow, M, (dst_width, dst_height), flags=cv2.INTER_LINEAR)
         warped_white = cv2.warpPerspective(binary_white, M, (dst_width, dst_height), flags=cv2.INTER_LINEAR)
 
+        out_yellow = np.dstack((warped_yellow, warped_yellow, warped_yellow))
+        out_white = np.dstack((warped_white, warped_white, warped_white))
+        out_img = out_white + out_yellow
 
         histogram_yellow = np.sum(warped_yellow[:,:], axis=0) #histogram_yellow = [1520, 0, 255 ...  512] len(histogram_yellow) = 400
-        print(warped_yellow.shape)
         midpoint = histogram_yellow.shape[0] // 2 # 200
         indWhiteColumnL = np.argmax(histogram_yellow[:midpoint]) #индекс элемента с наибольшим значением
         warped_yellow_visual = warped_yellow.copy()
-        cv2.line(warped_yellow_visual, (indWhiteColumnL, 0), (indWhiteColumnL, histogram_yellow.shape[0]), 255, 3)
+        cv2.line(out_img, (indWhiteColumnL, 0), (indWhiteColumnL, histogram_yellow.shape[0]), (0, 255, 255), 1)
+
+        histogram_white = np.sum(warped_white[:,:], axis=0)
+        midpoint2 = histogram_white.shape[0] // 2
+        indWhiteColumnR = np.argmax(histogram_white[midpoint2:]) + midpoint2
+        warped_white_visual = warped_white.copy()
+        cv2.line(out_img, (indWhiteColumnR, 0), (indWhiteColumnR, histogram_white.shape[0]), (255, 255, 255), 1)
+
+        nwindows = 9
+        window_height = out_img.shape[0] // 9
+        window_half_width = 20
+        XCenterLeftWindow = indWhiteColumnL
+        XCenterRightWindow = indWhiteColumnR
+
+        for window in range(nwindows):
+            win_y1 = out_img.shape[0] - (window + 1) * window_height
+            win_y2 = out_img.shape[0] - (window) * window_height
+            left_win_x1 = XCenterLeftWindow - window_half_width
+            left_win_x2 = XCenterLeftWindow + window_half_width
+            right_win_x1 = XCenterRightWindow - window_half_width
+            right_win_x2 = XCenterRightWindow + window_half_width
+
+            cv2.rectangle(out_img, (left_win_x1, win_y1), (left_win_x2, win_y2), (0, 255, 255), 1)
+
 
         cv2.imshow("frame", frame)
         cv2.imshow("warped_yellow", warped_yellow_visual)
-        cv2.imshow("warped white", warped_white)
+        cv2.imshow("warped_white", warped_white_visual)
+        cv2.imshow("out", out_img)
 
     else:
         video.set(cv2.CAP_PROP_POS_FRAMES, 0)
