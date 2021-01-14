@@ -71,10 +71,11 @@ while(video.isOpened()):
             cv2.rectangle(out_img, (right_win_x1, win_y1), (right_win_x2, win_y2), (0, 0, 50 + window * 21), 2)
 
             # выясняем какие белые пиксель попали внутрь окна
+            # & - побитовое сложение, т.к. and не работает для массивов
             good_left_inds = ((WhitePixelIndY_y >= win_y1) & (WhitePixelIndY_y <= win_y2) & (WhitePixelIndX_y >= left_win_x1) & (
-                    WhitePixelIndX_y <= left_win_x2)).nonzero()[0]
+                    WhitePixelIndX_y <= left_win_x2)).nonzero()
             good_right_inds = ((WhitePixelIndY_w >= win_y1) & (WhitePixelIndY_w <= win_y2) & (WhitePixelIndX_w >= right_win_x1) & (
-                    WhitePixelIndX_w <= right_win_x2)).nonzero()[0]
+                    WhitePixelIndX_w <= right_win_x2)).nonzero()
 
             left_lane_inds = np.concatenate((left_lane_inds, good_left_inds))
             right_lane_inds = np.concatenate((right_lane_inds, good_right_inds))
