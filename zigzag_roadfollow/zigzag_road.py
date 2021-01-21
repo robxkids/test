@@ -45,11 +45,11 @@ while(video.isOpened()):
         # создаем окна вдоль оси гистограммы
         nwindows = 9
         window_height = out_img.shape[0] // 9
-        window_half_width = 20
+        window_half_width = 40
         XCenterLeftWindow = indWhiteColumnL
         XCenterRightWindow = indWhiteColumnR
 
-        # создаем два пустых массива в которых будем хранить пиксели линий
+        # создаем два пустых массива в которых будем хранить пиксели линий которые попали внутрь окна
         left_lane_inds = np.array([], dtype=np.int16)
         right_lane_inds = np.array([], dtype=np.int16)
 
@@ -64,10 +64,6 @@ while(video.isOpened()):
         # d = l.nonzero(0)
         # d = array([0, 0, 0, 1, 1]), array([0, 1, 3, 0, 1])
 
-        b = np.array([[1, 0, 2],
-                      [3, 0, 0],
-                      [4, 0, 5]])
-        r = b.nonzero() # r? array([])
 
         WhitePixelIndY_yellow = np.array(nonzero_yellow[0])
         WhitePixelIndX_yellow = np.array(nonzero_yellow[1])
@@ -91,11 +87,26 @@ while(video.isOpened()):
 
             # найдем белые пиксели которые попали внутрь окон
             good_yellow_inds = ((WhitePixelIndY_yellow >= win_y1) & (WhitePixelIndY_yellow <= win_y2)
-                                & (WhitePixelIndX_yellow >= left_win_x1) & (WhitePixelIndX_yellow <= left_win_x2))
+                                & (WhitePixelIndX_yellow >= left_win_x1) & (WhitePixelIndX_yellow <= left_win_x2)).nonzero()[0]
             good_white_inds = ((WhitePixelIndY_white >= win_y1) & (WhitePixelIndY_white <= win_y2)
-                                & (WhitePixelIndX_white >= right_win_x1) & (WhitePixelIndX_white <= right_win_x2))
+                                & (WhitePixelIndX_white >= right_win_x1) & (WhitePixelIndX_white <= right_win_x2)).nonzero()[0]
 
-            #
+            # добавляем белые пиксели которые попали внутрь окна в общий массив
+            left_lane_inds = np.concatenate((left_lane_inds, good_yellow_inds))
+            right_lane_inds = np.concatenate((right_lane_inds, good_white_inds))
+
+            # если внутрь окна попало более 50 "хороших" пикселей, смещаем след. окна на среднюю X координату
+            # этих пикселей
+            if len(good_yellow_inds) > 50:
+                XCenterLeftWindow = np.int(np.mean(WhitePixelIndX_yellow[good_yellow_inds]))
+            if len(good_white_inds) > 50:
+                XCenterRightWindow = np.int(np.mean(WhitePixelIndX_white[good_white_inds]))
+
+        # раскрашиваем пиксели которые попали внутрь окон
+        out_img[WhitePixelIndY_yellow[left_lane_inds], WhitePixelIndX_yellow[left_lane_inds]] = [0, 255, 255]
+        out_img[WhitePixelIndY_white[right_lane_inds], WhitePixelIndX_white[right_lane_inds]] = [0, 255, 0]
+        # короткая домашка - раскрасить аналогично пиксели правой разметки (белой)
+
 
         # выводим полученные изображения на экран
         cv2.imshow("frame", frame)

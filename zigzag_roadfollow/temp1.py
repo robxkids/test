@@ -1,9 +1,17 @@
 import numpy as np
 
-l = np.array([[255, 255, 0, 255],
-             [255, 255, 0, 0]])
+# x = np.array([[255, 0, 255]])
+# y = np.array([[255, 125, 0]])
+#
+# x & y [True, False, False]
 
-r = l.nonzero()
-print(r)
+# & побитовое И
 
-# array([0, 0, 0, 1, 1]), array([0, 1, 3, 0, 1])
+# 5, 101
+
+a = 5
+
+for i in range(3):
+    a = a + 1
+
+print(a)
