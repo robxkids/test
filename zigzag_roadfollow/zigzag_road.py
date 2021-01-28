@@ -107,6 +107,25 @@ while(video.isOpened()):
         out_img[WhitePixelIndY_white[right_lane_inds], WhitePixelIndX_white[right_lane_inds]] = [0, 255, 0]
         # короткая домашка - раскрасить аналогично пиксели правой разметки (белой)
 
+        leftx = WhitePixelIndX_yellow[left_lane_inds]
+        lefty = WhitePixelIndY_yellow[left_lane_inds]
+        rightx = WhitePixelIndX_white[right_lane_inds]
+        righty = WhitePixelIndY_white[right_lane_inds]
+
+        if leftx.size and lefty.size and rightx.size and righty.size:
+            left_fit = np.polyfit(lefty, leftx, 2)
+            # [ 1.86287301e-03 (a) -1.25976411e+00 (b)  1.34310725e+02 (c)]
+            right_fit = np.polyfit(righty, rightx, 2)
+            # print(left_fit)
+
+            for ver_ind in range(out_img.shape[0]):
+                # y = ax2 + bx + c
+                gor_ind = left_fit[0] * (ver_ind ** 2) + left_fit[1] * ver_ind + left_fit[2]
+                gor_ind_w = right_fit[0] * (ver_ind ** 2) + right_fit[1] * ver_ind + right_fit[2]
+                cv2.circle(out_img, (int(gor_ind), int(ver_ind)), 2, (255, 0, 255), 1)
+                cv2.circle(out_img, (int(gor_ind_w), int(ver_ind)), 2, (255, 0, 255), 1)
+            # задание на дом: посчитать и нарисовать линию (траекторию) по которой должна двигаться машинка, т.е.
+            # между левой и правой полосой разметки
 
         # выводим полученные изображения на экран
         cv2.imshow("frame", frame)
@@ -128,3 +147,4 @@ while(video.isOpened()):
 
 video.release()
 cv2.destroyAllWindows()
+
